@@ -1,7 +1,7 @@
 #Script for decision tree classification of heart disease data
 
 import pandas as pd 
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 
@@ -24,19 +24,14 @@ for feature in feature_cols:
 
 #Need to clean for any missing values
 
-
 # Split dataset into training set and test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1) # 70% training and 30% test
 
-# Create Decision Tree classifer object
-clf = DecisionTreeClassifier()
 
-# Train Decision Tree Classifer
-clf = clf.fit(X_train,y_train)
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+y_pred = knn.predict(X_test)
+scores[k] = metrics.accuracy_score(y_test, y_pred)
 
-#Predict the response for test dataset
-y_pred = clf.predict(X_test)
-
-# Model Accuracy, how often is the classifier correct?
-print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
-
+# Print accuracy
+print("Accuracy:", (metrics.accuracy_score(y_test, y_pred))
