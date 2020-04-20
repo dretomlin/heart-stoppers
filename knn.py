@@ -49,6 +49,8 @@ aucs_sum = 0
 fprs_sum = 0
 tprs_sum = 0
 thresholds_sum = 0
+y_pred_agg = []
+y_test_agg = []
 for train_index, test_index in skf.split(X, y):
     # Split data
     X_train = X[train_index]
@@ -60,6 +62,9 @@ for train_index, test_index in skf.split(X, y):
     knn = KNeighborsClassifier(n_neighbors=5)
     knn.fit(X_train, y_train)
     y_pred = knn.predict(X_test)
+
+    y_pred_agg += list(y_pred)
+    y_test_agg += list(y_test)
 
     # Compute metrics
     accuracy = metrics.accuracy_score(y_test, y_pred)
@@ -92,15 +97,10 @@ for train_index, test_index in skf.split(X, y):
 
     cur_fold += 1
 
-# Print average accuracy
-print("\nAverage accuracy: {}".format(accuracies_sum/k))
 
 # Print average confusion matrix
 print("Average confusion matrix:")
 print("{}".format(confusion_matrices_sum/k))
-
-# Print average precisions
-print("Average precision: {}:".format(precisions_sum/k))
 
 # Print average f1
 print("Average f1: {}".format(f1s_sum/k))
@@ -119,3 +119,15 @@ def plot_roc_curve(fpr, tpr):
     plt.show()
 
 plot_roc_curve(fprs_sum/k, tprs_sum/k)
+
+#Working on function for evalution methods
+def evals(y_test_truth, y_predictions):
+    acc=metrics.accuracy_score(y_test_truth, y_predictions)
+    mse=metrics.mean_squared_error(y_test_truth, y_predictions)
+    c_report=metrics.classification_report(y_test_truth, y_predictions)
+
+    print("Accuracy: ", acc)
+    print("Mean-Squared Erro: ", mse)
+    print("Classification report: ", c_report)
+
+evals(y_test_agg, y_pred_agg)
