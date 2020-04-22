@@ -1,3 +1,4 @@
+# %%
 #Naive bayes implementation
 import matplotlib.pyplot as plt
 import numpy as np
@@ -6,19 +7,19 @@ from sklearn import metrics
 from sklearn.metrics import roc_curve
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes  import GaussianNB
-from sklearn.model_selection  import KFold, cross_val_score
+from sklearn.model_selection  import KFold, cross_val_score, validation_curve, learning_curve
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
 #all Ploting stuff based on that from dTree file, modified to work for this program
-# In[2]
+# %%
 col_names = ['age', 'sex', 'chest-pain', 'restbps', 'cholesterol', 'fasting-bs', 'rest-ecg', 'thalach', 'exang', 'oldpeak', 'slope', 'colored-v', 'thal', 'num']
 feature_cols = ['age', 'sex', 'chest-pain', 'restbps', 'cholesterol', 'fasting-bs', 'rest-ecg', 'thalach', 'exang', 'oldpeak', 'slope', 'colored-v', 'thal']
 # load dataset
-# In[3]:
+# %%
 heart = pd.read_csv("processed.cleveland.data", header=None, names=col_names)
-# In[4]:
+# %%
 X = heart[feature_cols] # Features
 y = heart['num'] # Target variable
 
@@ -68,7 +69,7 @@ directory = 'graph_pictures'
 if not os.path.exists('graph_pictures'):
     os.makedirs('graph_pictures')
     
-directory += '/dtree_init_cv_score.png'
+directory += '/nb_init_cv_score.png'
 plt.savefig(directory)
 
 #precision
@@ -90,7 +91,7 @@ def make_confusion_matrix(y_test, y_predictor):
     if not os.path.exists('graph_pictures'):
         os.makedirs('graph_pictures')
     
-    directory += '/dtree_confusion_matrix.png'
+    directory += '/nb_confusion_matrix.png'
     plt.savefig(directory)
 
 make_confusion_matrix(y_test, y_pred)

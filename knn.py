@@ -1,4 +1,4 @@
-#Script for decision tree classification of heart disease data
+# Script for decision tree classification of heart disease data
 
 import matplotlib.pyplot as plt
 import numpy as np
