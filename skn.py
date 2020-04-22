@@ -1,0 +1,111 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd 
+from sklearn import metrics
+from sklearn.metrics import roc_curve
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.model_selection  import KFold, cross_val_score
+import seaborn as sns
+import matplotlib.pyplot as plt
+import os
+
+#all Ploting stuff based on that from dTree file, modified to work for this program
+# In[2]
+col_names = ['age', 'sex', 'chest-pain', 'restbps', 'cholesterol', 'fasting-bs', 'rest-ecg', 'thalach', 'exang', 'oldpeak', 'slope', 'colored-v', 'thal', 'num']
+feature_cols = ['age', 'sex', 'chest-pain', 'restbps', 'cholesterol', 'fasting-bs', 'rest-ecg', 'thalach', 'exang', 'oldpeak', 'slope', 'colored-v', 'thal']
+# load dataset
+# In[3]:
+heart = pd.read_csv("processed.cleveland.data", header=None, names=col_names)
+# In[4]:
+X = heart[feature_cols] # Features
+y = heart['num'] # Target variable
+
+for feature in feature_cols:
+    if X[feature].dtype == np.float64:
+        continue
+    indexNames = X[X[feature] == '?' ].index
+    # Delete these row indexes from dataFrame
+    X.drop(indexNames , inplace=True)
+    y.drop(indexNames , inplace=True)
+    X[feature] = X[feature].astype(np.float64)
+
+# Convert dfs to numpy arrays
+X = np.array(X)
+y = np.array(y)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+cnb=SVC(gamma='auto')
+
+cnb.fit(X_train, y_train)
+
+y_pred=cnb.predict(X_test)
+
+'''
+metrics Section
+'''
+
+#accuracy
+accuracy = metrics.accuracy_score(y_test, y_pred)
+print("accuracy:")
+print(accuracy)
+
+
+#classification_report
+print("classification_report:")
+print(metrics.classification_report(y_test, y_pred))
+
+#Kfolds and cv_score
+k_fold = KFold(n_splits=5, shuffle=True, random_state=0)
+print("cross_val_score:")
+cv_scores=cross_val_score(cnb, X, y, cv=k_fold, n_jobs=1)
+print(cv_scores)
+sns.distplot(cv_scores)
+plt.title('Average score: {}'.format(np.mean(cv_scores)))
+    
+directory = 'graph_pictures'
+    
+if not os.path.exists('graph_pictures'):
+    os.makedirs('graph_pictures')
+    
+directory += '/skn_init_cv_score.png'
+plt.savefig(directory)
+
+#precision
+precision = metrics.precision_score(y_test, y_pred, average='micro')
+print("precision:")
+print(precision)
+
+#confusion matrix.
+def make_confusion_matrix(y_test, y_predictor):
+    cm=metrics.confusion_matrix(y_test, y_predictor)
+    index = ['0-NP','1-P','2-P','3-P','4-P']  
+    columns = ['0-NP','1-P','2-P','3-P','4-P']
+    cm_df = pd.DataFrame(cm, columns, index)
+    plt.figure(figsize=(10,6))  
+    sns.heatmap(cm_df, annot=True)
+    
+    directory = 'graph_pictures'
+    
+    if not os.path.exists('graph_pictures'):
+        os.makedirs('graph_pictures')
+    
+    directory += '/skn_confusion_matrix.png'
+    plt.savefig(directory)
+
+make_confusion_matrix(y_test, y_pred)
+#MSE
+mse=metrics.mean_squared_error(y_test, y_pred)
+print("MSE:")
+print(mse)
+
+#recall score:
+rscore=metrics.recall_score(y_test.ravel(), y_pred.ravel(), average=None)
+print("recall score")
+print(rscore)
+
+#f1 score:
+f1score=metrics.f1_score(y_test.ravel(), y_pred.ravel(), average=None)
+print("F1 Score:")
+print(f1score)
