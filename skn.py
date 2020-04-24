@@ -9,6 +9,8 @@ from sklearn.model_selection  import KFold, cross_val_score
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+from sklearn.model_selection import learning_curve
+from sklearn.model_selection import ShuffleSplit
 
 #all Ploting stuff based on that from dTree file, modified to work for this program
 # In[2]
