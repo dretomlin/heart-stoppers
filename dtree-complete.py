@@ -27,7 +27,8 @@ def data_clean(x_feat, y_label):
         x_feat.drop(indexNames , inplace=True)
         y_label.drop(indexNames , inplace=True)  
         
-    X = x_feat.to_numpy()
+    scaled_features = preprocessing.StandardScaler().fit_transform(x_feat.values)
+    X = scaled_features
     y = y_label.to_numpy()
     return(X, y)
 
@@ -74,6 +75,10 @@ def leaf_validation_plot(clf_type, X_feat, y_label, num):
     test_mean = np.mean(test_scores, axis=1)
     test_std = np.std(test_scores, axis=1)
     
+    #clear other plot
+    plt.clf()
+    plt.cla()
+
     fig, ax = plt.subplots()
     
     # Plot mean accuracy scores for training and test sets
@@ -170,6 +175,10 @@ def make_confusion_matrix(y_test, y_predictor):
 make_confusion_matrix(y_test, y_predictor)
 
 def make_dtree_visual(model):
+    #clear other plots
+    plt.clf()
+    plt.cla()
+
     fig, axes = plt.subplots(nrows = 1,ncols = 1,figsize = (4,4), dpi=300)
     plot_tree(model,
                    feature_names = feature_cols, 
@@ -216,11 +225,15 @@ def multiclass_split(X, y):
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
+    roc_summer = []
 
     for i in range(5):
         fpr[i], tpr[i], _ = metrics.roc_curve(y_test[:, i], probs[:, i])
         roc_auc[i] = metrics.auc(fpr[i], tpr[i])
         print(roc_auc[i])
+        roc_summer.append(roc_auc[i])
+    
+    print("Average ROC-AUC: ", sum(roc_summer) / len(roc_summer))
 
     SMALL_SIZE = 8
     MEDIUM_SIZE = 10
@@ -234,7 +247,7 @@ def multiclass_split(X, y):
     plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
-    colors = ['blue', 'red', 'green']
+    colors = ['blue', 'red', 'green', 'cyan', 'magenta']
     for i, color in zip(range(5), colors):
         plt.plot(fpr[i], tpr[i], color=color, lw=1,
                  label='ROC curve of class {0} (area = {1:0.2f})'

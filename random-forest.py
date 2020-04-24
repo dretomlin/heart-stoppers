@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV, cross_val_score, validation_curve, KFold
 from sklearn import metrics
-from sklearn.preprocessing import MinMaxScaler, label_binarize
+from sklearn.preprocessing import MinMaxScaler, label_binarize, StandardScaler
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.tree import plot_tree
 import os
@@ -27,8 +27,9 @@ def data_clean(x_feat, y_label):
         # Delete these row indexes from dataFrame
         x_feat.drop(indexNames , inplace=True)
         y_label.drop(indexNames , inplace=True)  
-        
-    X = x_feat.to_numpy()
+    
+    scaled_features = StandardScaler().fit_transform(x_feat.values)
+    X = scaled_features    
     y = y_label.to_numpy()
     return(X, y)
 
@@ -247,13 +248,17 @@ def multiclass_split(X, y):
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
+    roc_summer = []
 
     for i in range(5):
         fpr[i], tpr[i], _ = metrics.roc_curve(y_test[:, i], probs[:, i])
         roc_auc[i] = metrics.auc(fpr[i], tpr[i])
         print(roc_auc[i])
+        roc_summer.append(roc_auc[i])
+    
+    print("Average ROC-AUC: ", sum(roc_summer) / len(roc_summer))
 
-    colors = ['blue', 'red', 'green']
+    colors = ['blue', 'red', 'green', 'cyan', 'magenta']
     for i, color in zip(range(5), colors):
         plt.plot(fpr[i], tpr[i], color=color, lw=1,
                  label='ROC curve of class {0} (area = {1:0.2f})'

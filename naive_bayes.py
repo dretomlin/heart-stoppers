@@ -31,9 +31,9 @@ for feature in feature_cols:
     X.drop(indexNames , inplace=True)
     y.drop(indexNames , inplace=True)
     X[feature] = X[feature].astype(np.float64)
-
+scaled_features = preprocessing.StandardScaler().fit_transform(x_feat.values)
+X = scaled_features
 # Convert dfs to numpy arrays
-X = np.array(X)
 y = np.array(y)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
