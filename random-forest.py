@@ -108,18 +108,34 @@ X_norm = min_max_scaler.fit_transform(X)
 
 rnd_clf = RandomForestClassifier(n_estimators=500, n_jobs=-1, random_state=42)
 rnd_clf.fit(X_norm, y)
+
 for name, importance in zip(feature_cols, rnd_clf.feature_importances_):
     print(name, "=", importance)
-    
+
 features = feature_cols
 importances = rnd_clf.feature_importances_
 indices = np.argsort(importances)
-my_colors = 'rgbkymc'
-plt.title('Feature Importances')
-plt.barh(range(len(indices)), importances[indices], color=my_colors, align='center')
-plt.yticks(range(len(indices)), [features[i] for i in indices])
-plt.xlabel('Relative Importance')
 
+def plot_feat_importance(features, importances, indices):
+    #Clear previous plot
+    plt.clf()
+    plt.cla()
+
+    my_colors = 'rgbkymc'
+    plt.title('Feature Importances')
+    plt.barh(range(len(indices)), importances[indices], color=my_colors, align='center')
+    plt.yticks(range(len(indices)), [features[i] for i in indices])
+    plt.xlabel('Relative Importance')
+
+    directory = 'graph_pictures'
+    
+    if not os.path.exists('graph_pictures'):
+        os.makedirs('graph_pictures')
+    
+    directory += '/rforest_feature_importance.png'
+    plt.savefig(directory)
+
+plot_feat_importance(features, importances, indices)
 #Creating simple testing split to be used in model_fitter function
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size = 0.20, random_state = 1)
@@ -135,8 +151,8 @@ def gridSearch(clf, X_feat, y_label):
     param_grid = [{'max_depth':depths, 'min_samples_leaf':num_leafs}]
     gs = GridSearchCV(estimator=clf, param_grid=param_grid, cv=5, verbose=5)
     gs = gs.fit(X, y)
-    print(gs.best_score_)
-    print(gs.best_params_)
+    print("This is the best score from grid search: ", gs.best_score_)
+    print("This is the best parameters for the model based on grid search: ", gs.best_params_)
     #print(gs.best_estimator_)
     
     my_model = gs.best_estimator_    
@@ -175,6 +191,11 @@ def make_confusion_matrix(y_test, y_predictor):
     index = ['0-NP','1-P','2-P','3-P','4-P']  
     columns = ['0-NP','1-P','2-P','3-P','4-P']
     cm_df = pd.DataFrame(cm, columns, index)
+    
+    #Clear previous plot
+    plt.clf()
+    plt.cla()
+
     plt.figure(figsize=(10,6))  
     sns.heatmap(cm_df, annot=True)
     

@@ -6,6 +6,7 @@ from sklearn.metrics import roc_curve
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.model_selection  import KFold, cross_val_score
+from sklearn import preprocessing
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
@@ -31,7 +32,8 @@ for feature in feature_cols:
     X.drop(indexNames , inplace=True)
     y.drop(indexNames , inplace=True)
     X[feature] = X[feature].astype(np.float64)
-scaled_features = preprocessing.StandardScaler().fit_transform(x_feat.values)
+
+scaled_features = preprocessing.StandardScaler().fit_transform(X.values)
 X = scaled_features
 # Convert dfs to numpy arrays
 y = np.array(y)
@@ -141,5 +143,5 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None, n_jobs=None,
 
 title = "Learning Curves (SVM, RBF kernel, $\gamma=0.001$)"
 # SVC is more expensive so we do a lower number of CV iterations:
-cv = ShuffleSplit(n_splits=10, test_size=0.2, random_state=0)
-plot_learning_curve(cnb, title, X, y, (0.7, 1.01), cv=cv, n_jobs=4)
+cv = ShuffleSplit(n_splits=5, test_size=0.2, random_state=0)
+plot_learning_curve(cnb, title, X, y, (0.4, 1.01), cv=cv, n_jobs=4)

@@ -121,8 +121,8 @@ def gridSearch(clf, X_feat, y_label):
     param_grid = [{'max_depth':depths, 'min_samples_leaf':num_leafs}]
     gs = GridSearchCV(estimator=clf, param_grid=param_grid, cv=5)
     gs = gs.fit(X, y)
-    print(gs.best_score_)
-    print(gs.best_params_)
+    print("This is the best score from grid search: ", gs.best_score_)
+    print("This is the best parameters for the model based on grid search: ", gs.best_params_)
     #print(gs.best_estimator_)
     
     my_model = gs.best_estimator_    

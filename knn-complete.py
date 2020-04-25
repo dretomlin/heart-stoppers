@@ -111,10 +111,9 @@ def knn_grid(X,y):
     knn_gscv = GridSearchCV(knn2, param_grid, cv=5)#fit model to data
     knn_gscv.fit(X, y)
     #check top performing n_neighbors value
-    print(knn_gscv.best_params_)
     #check mean score for the top performing value of n_neighbors
-    print(knn_gscv.best_score_)
-    print(knn_gscv.best_estimator_)
+    print("This is the best score from grid search: ", knn_gscv.best_score_)
+    print("This is the best parameters for the model based on grid search: ", knn_gscv.best_params_)
     return(knn_gscv.best_estimator_)
 
 model = knn_grid(X,y)
